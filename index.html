@@ -348,12 +348,13 @@
                 const messages = await res.json();
                 const sessions = {};
 
+
                 messages.forEach(msg => {
-                    if (!sessions[msg.session_id]) sessions[msg.session_id] = [];
-                    try {
-                        const parsed = JSON.parse(msg.message);
-                        sessions[msg.session_id].push({ role: parsed.type, content: parsed.content });
-                    } catch(e) {}
+                    const sid = msg.session_id;
+                    if (!sessions[sid]) sessions[sid] = [];
+                    // Le message est déjà un objet, inutile de le parser
+                    const msgData = typeof msg.message === 'string' ? JSON.parse(msg.message) : msg.message;
+                    sessions[sid].push({ role: msgData.type, content: msgData.content });
                 });
 
                 container.innerHTML = '';
