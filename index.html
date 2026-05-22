@@ -3,111 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistant IA - Chat & Historique</title>
+    <title>AI Therapy - Assistant Intelligent</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (Optionnel pour des icônes propres) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; min-height: 100vh; display: flex; flex-direction: column; }
-        .container { max-width: 800px; margin: 0 auto; width: 100%; padding: 20px; flex: 1; }
-        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; cursor: pointer; background: #eee; border: none; border-radius: 8px 8px 0 0; margin-right: 5px; }
-        .tab.active { background: white; border: 2px solid #ddd; border-bottom: none; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        #chat-box { height: 400px; overflow-y: auto; border: 1px solid #ccc; border-radius: 8px; padding: 15px; background: white; margin-bottom: 15px; }
-        .message { margin-bottom: 15px; display: flex; flex-direction: column; }
-        .message.user { align-items: flex-end; }
-        .message.assistant { align-items: flex-start; }
-        .message-content { max-width: 80%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; }
-        .user .message-content { background: #007bff; color: white; border-bottom-right-radius: 4px; }
-        .assistant .message-content { background: #e9ecef; color: #1a1a1a; border-bottom-left-radius: 4px; }
-        .input-area { display: flex; gap: 10px; }
-        #user-input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 24px; font-size: 16px; }
-        button { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 24px; cursor: pointer; font-size: 16px; }
-        button:disabled { background: #6c757d; cursor: not-allowed; }
-        #sessions-list { background: white; border-radius: 8px; border: 1px solid #ccc; padding: 15px; }
-        .session-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .session-item:hover { background: #f0f0f0; }
-        .session-details { display: none; padding: 10px; background: #fafafa; border-radius: 4px; margin-top: 5px; }
-        .session-details .msg { margin-bottom: 8px; font-size: 14px; }
-        .human-msg { color: #007bff; }
-        .ai-msg { color: #28a745; }
-        .loading { text-align: center; padding: 20px; color: #666; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 90vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Header & Tabs --- */
+        header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #818cf8, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* --- Content Area --- */
+        .tab-content {
+            flex: 1;
+            display: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .tab-content.active { display: flex; flex-direction: column; }
+
+        /* --- Chat Interface --- */
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollbar ultra fine */
+        #chat-box::-webkit-scrollbar { width: 5px; }
+        #chat-box::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        .message {
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user { align-self: flex-end; }
+        .message.assistant { align-self: flex-start; }
+
+        .message-content {
+            padding: 14px 18px;
+            border-radius: 18px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .user .message-content {
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .assistant .message-content {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* --- Input Area --- */
+        .input-area {
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        #user-input:focus { border-color: var(--primary); }
+
+        #send-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #send-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- History Tab --- */
+        #history-tab { padding: 24px; overflow-y: auto; }
+
+        .session-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .session-header {
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-header:hover { background: rgba(255, 255, 255, 0.05); }
+
+        .session-details {
+            padding: 0 16px 16px 16px;
+            display: none;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .msg-item {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .human-msg { color: #818cf8; background: rgba(129, 140, 248, 0.1); }
+        .ai-msg { color: #34d399; background: rgba(52, 211, 153, 0.1); }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-dim);
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Assistant Thérapeutique</h1>
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('chat')">Chat</button>
-            <button class="tab" onclick="switchTab('history')">Historique</button>
-        </div>
+
+    <div class="app-container">
+        <header>
+            <h1>AI.Therapy</h1>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('chat')">Assistant</button>
+                <button class="tab" onclick="switchTab('history')">Historique</button>
+            </div>
+        </header>
 
         <!-- Onglet Chat -->
         <div id="chat-tab" class="tab-content active">
             <div id="chat-box"></div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Écrivez votre message..." />
-                <button id="send-btn" onclick="sendMessage()">Envoyer</button>
+                <input type="text" id="user-input" placeholder="Comment vous sentez-vous aujourd'hui ?" onkeypress="if(event.key === 'Enter') sendMessage()" />
+                <button id="send-btn" onclick="sendMessage()">
+                    <span>Envoyer</span>
+                    <i data-lucide="send" style="width: 18px;"></i>
+                </button>
             </div>
         </div>
 
         <!-- Onglet Historique -->
         <div id="history-tab" class="tab-content">
             <div id="sessions-list">
-                <div class="loading">Chargement des conversations...</div>
+                <div class="loading-spinner">Chargement de vos souvenirs...</div>
             </div>
         </div>
     </div>
 
     <script>
-        // ========== CONFIGURATION ==========
-        const N8N_WEBHOOK_URL = 'https://n8n.srv998468.hstgr.cloud/webhook/7d0ef59e-1d83-490d-97d1-fc43f4b6aeaf/chat';  //
+        // Initialisation des icônes
+        lucide.createIcons();
+
+        // ========== CONFIGURATION (Gardée de ton code original) ==========
+        const N8N_WEBHOOK_URL = 'https://n8n.srv998468.hstgr.cloud/webhook/7d0ef59e-1d83-490d-97d1-fc43f4b6aeaf/chat';
         const SUPABASE_URL = 'https://cnpnefhcxwwvvkuoihbm.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucG5lZmhjeHd3dnZrdW9paGJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMjczODEsImV4cCI6MjA5NDYwMzM4MX0.adTRk0wdINea3KCfgYRGDhFL4phUW36RRH--T128aMY';
-        //
 
-        // ========== GESTION DE SESSION ==========
-        let sessionId = localStorage.getItem('chatSessionId');
-        if (!sessionId) {
-            sessionId = generateUUID();
-            localStorage.setItem('chatSessionId', sessionId);
-        }
+        let sessionId = localStorage.getItem('chatSessionId') || generateUUID();
+        localStorage.setItem('chatSessionId', sessionId);
 
         function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
         }
 
-        // ========== CHAT ==========
+        // ========== LOGIQUE CHAT ==========
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const message = input.value.trim();
             if (!message) return;
 
-            // Afficher le message utilisateur
             appendMessage('user', message);
             input.value = '';
-            document.getElementById('send-btn').disabled = true;
+            
+            const btn = document.getElementById('send-btn');
+            btn.disabled = true;
 
             try {
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chatInput: message,
-                        sessionId: sessionId
-                    })
+                    body: JSON.stringify({ chatInput: message, sessionId: sessionId })
                 });
                 const data = await response.json();
-                const assistantMessage = data.output || data.text || data.response || data.message || 'Réponse reçue.';
+                const assistantMessage = data.output || data.text || data.response || "Je vous écoute...";
                 appendMessage('assistant', assistantMessage);
             } catch (error) {
-                console.error(error);
-                appendMessage('assistant', 'Erreur de connexion au serveur.');
+                appendMessage('assistant', "Désolé, j'ai rencontré une petite erreur technique.");
             } finally {
-                document.getElementById('send-btn').disabled = false;
+                btn.disabled = false;
             }
         }
 
@@ -121,84 +328,89 @@
         }
 
         function escapeHtml(text) {
-            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        // ========== HISTORIQUE ==========
+        // ========== LOGIQUE HISTORIQUE AMÉLIORÉE ==========
         async function loadHistory() {
             const container = document.getElementById('sessions-list');
-            container.innerHTML = '<div class="loading">Chargement des conversations...</div>';
+            container.innerHTML = '<div class="loading-spinner">Analyse de l\'historique...</div>';
 
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/n8n_chat_histories?select=session_id,message,id&order=id.asc`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/n8n_chat_histories?select=session_id,message,id&order=id.desc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                     }
                 });
-                if (!res.ok) throw new Error(`Erreur ${res.status}`);
                 const messages = await res.json();
-
-                // Grouper par session_id
                 const sessions = {};
+
                 messages.forEach(msg => {
-                    const sid = msg.session_id;
-                    if (!sessions[sid]) sessions[sid] = [];
-                    const parsed = JSON.parse(msg.message);  // {"type":"human", "content":"..."}
-                    sessions[sid].push({ role: parsed.type, content: parsed.content });
+                    if (!sessions[msg.session_id]) sessions[msg.session_id] = [];
+                    try {
+                        const parsed = JSON.parse(msg.message);
+                        sessions[msg.session_id].push({ role: parsed.type, content: parsed.content });
+                    } catch(e) {}
                 });
 
+                container.innerHTML = '';
                 if (Object.keys(sessions).length === 0) {
-                    container.innerHTML = '<p>Aucune conversation enregistrée.</p>';
+                    container.innerHTML = '<p style="text-align:center; color:var(--text-dim)">Aucune conversation passée.</p>';
                     return;
                 }
 
-                // Afficher la liste des sessions
-                container.innerHTML = '';
                 for (const [sid, msgs] of Object.entries(sessions)) {
-                    const sessionDiv = document.createElement('div');
-                    sessionDiv.classList.add('session-item');
-                    const firstMsg = msgs[0]?.content?.substring(0, 80) || 'Conversation';
-                    sessionDiv.innerHTML = `<strong>${sid.slice(0, 8)}...</strong> - ${escapeHtml(firstMsg)}...`;
-
-                    // Zone détail (messages)
-                    const detailDiv = document.createElement('div');
-                    detailDiv.classList.add('session-details');
-                    msgs.forEach(m => {
-                        const msgClass = m.role === 'human' ? 'human-msg' : 'ai-msg';
-                        detailDiv.innerHTML += `<div class="msg ${msgClass}"><strong>${m.role === 'human' ? 'Vous' : 'Assistant'} :</strong> ${escapeHtml(m.content)}</div>`;
-                    });
-
-                    sessionDiv.onclick = () => {
-                        detailDiv.style.display = detailDiv.style.display === 'block' ? 'none' : 'block';
-                    };
-                    container.appendChild(sessionDiv);
-                    container.appendChild(detailDiv);
+                    const card = document.createElement('div');
+                    card.className = 'session-card';
+                    const title = msgs[0]?.content.substring(0, 60) + '...' || 'Session sans titre';
+                    
+                    card.innerHTML = `
+                        <div class="session-header" onclick="toggleSession(this)">
+                            <span style="font-size:0.9rem; font-weight:500">${title}</span>
+                            <i data-lucide="chevron-down" style="width:16px"></i>
+                        </div>
+                        <div class="session-details">
+                            ${msgs.reverse().map(m => `
+                                <div class="msg-item ${m.role === 'human' ? 'human-msg' : 'ai-msg'}">
+                                    <strong>${m.role === 'human' ? 'Vous' : 'IA'} :</strong> ${escapeHtml(m.content)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(card);
                 }
+                lucide.createIcons();
             } catch (error) {
-                console.error(error);
-                container.innerHTML = '<p>Impossible de charger l\'historique.</p>';
+                container.innerHTML = '<p>Erreur lors du chargement.</p>';
             }
         }
 
-        // ========== CHANGEMENT D'ONGLET ==========
+        function toggleSession(header) {
+            const details = header.nextElementSibling;
+            const isVisible = details.style.display === 'block';
+            details.style.display = isVisible ? 'none' : 'block';
+            header.querySelector('i').style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
             if (tab === 'chat') {
                 document.querySelector('.tab:nth-child(1)').classList.add('active');
                 document.getElementById('chat-tab').classList.add('active');
             } else {
                 document.querySelector('.tab:nth-child(2)').classList.add('active');
                 document.getElementById('history-tab').classList.add('active');
-                loadHistory();  // Charger l'historique chaque fois qu'on ouvre l'onglet
+                loadHistory();
             }
         }
 
-        // Charger quelques messages de démonstration au besoin
         window.onload = () => {
-            appendMessage('assistant', 'Bonjour, je suis votre assistant thérapeutique. Comment puis-je vous aider aujourd\'hui ?');
+            appendMessage('assistant', 'Bonjour. Je suis votre espace de parole sécurisé. Comment puis-je vous aider aujourd\'hui ?');
         };
     </script>
 </body>
