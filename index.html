@@ -2,263 +2,831 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>Esméralda IA - Assistant Intelligent</title>
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Lucide Icons (Optionnel pour des icônes propres) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest">
+    </script>
+
     <style>
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
             --secondary: #ec4899;
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg-mobile: rgba(15, 23, 42, 0.88);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border-strong: rgba(255, 255, 255, 0.15);
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
+            --text-muted: #64748b;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
         body {
             font-family: 'Outfit', sans-serif;
             background: var(--bg-gradient);
-            background-attachment: fixed;
+            background-attachment: scroll;
+            /* fixed removed for mobile performance */
             color: var(--text-main);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow: hidden;
+            /* Empêche le double scroll */
+            -webkit-overflow-scrolling: touch;
         }
 
+        /* --- Conteneur principal --- */
         .app-container {
             width: 100%;
             max-width: 1000px;
             height: 90vh;
+            height: 90dvh;
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: var(--radius-lg);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            transition: border-radius var(--transition-smooth), height var(--transition-smooth);
         }
 
         /* --- Header & Tabs --- */
         header {
-            padding: 24px 32px;
+            padding: 20px 28px;
+            padding-top: max(20px, var(--safe-top));
             border-bottom: 1px solid var(--glass-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2;
         }
 
         h1 {
             font-size: 1.5rem;
             font-weight: 600;
+            letter-spacing: -0.02em;
             background: linear-gradient(to right, #818cf8, #f472b6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.2);
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.25);
             padding: 4px;
-            border-radius: 12px;
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
         }
 
         .tab {
-            padding: 8px 20px;
+            padding: 10px 18px;
             cursor: pointer;
             border: none;
             background: transparent;
             color: var(--text-dim);
-            border-radius: 8px;
+            border-radius: var(--radius-xs);
             font-weight: 500;
-            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-family: 'Outfit', sans-serif;
+            transition: all var(--transition-smooth);
+            white-space: nowrap;
+            min-height: 40px;
+            min-width: 44px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .tab:active {
+            transform: scale(0.96);
+            transition: transform 0.1s ease;
         }
 
         .tab.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            font-weight: 600;
         }
 
-        /* --- Content Area --- */
+        /* --- Zones de contenu --- */
         .tab-content {
             flex: 1;
             display: none;
             overflow: hidden;
             position: relative;
+            min-height: 0;
         }
 
-        .tab-content.active { display: flex; flex-direction: column; }
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
 
-        /* --- Chat Interface --- */
+        /* --- Interface Chat --- */
         #chat-box {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
+            padding: 20px 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            min-height: 0;
         }
 
-        /* Scrollbar ultra fine */
-        #chat-box::-webkit-scrollbar { width: 5px; }
-        #chat-box::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        /* Scrollbar fine */
+        #chat-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        #chat-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #chat-box::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 10px;
+        }
+        #chat-box::-webkit-scrollbar-thumb:hover {
+            background: var(--glass-border-strong);
+        }
 
+        /* Messages */
         .message {
-            max-width: 80%;
+            max-width: 75%;
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.4s ease-out;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        .message.user { align-self: flex-end; }
-        .message.assistant { align-self: flex-start; }
+        .message.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+        .message.assistant {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
 
         .message-content {
-            padding: 14px 18px;
+            padding: 13px 17px;
             border-radius: 18px;
             line-height: 1.6;
             font-size: 0.95rem;
             position: relative;
+            letter-spacing: 0.01em;
         }
 
         .user .message-content {
             background: var(--primary);
             color: white;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
         }
 
         .assistant .message-content {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.07);
             border: 1px solid var(--glass-border);
             color: #e2e8f0;
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 5px;
         }
 
-        /* --- Input Area --- */
+        /* --- Zone de saisie --- */
         .input-area {
-            padding: 24px;
-            background: rgba(0, 0, 0, 0.1);
+            padding: 16px 20px;
+            padding-bottom: max(16px, var(--safe-bottom));
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
+            flex-shrink: 0;
+            border-top: 1px solid var(--glass-border);
+            z-index: 2;
         }
 
         #user-input {
             flex: 1;
-            padding: 14px 20px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 13px 18px;
+            background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--glass-border);
             border-radius: 14px;
             color: white;
             font-size: 1rem;
+            /* 16px minimum pour éviter le zoom iOS */
+            font-family: 'Outfit', sans-serif;
             outline: none;
-            transition: border 0.3s;
+            transition: border var(--transition-fast), box-shadow var(--transition-fast);
+            min-width: 0;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
-        #user-input:focus { border-color: var(--primary); }
+        #user-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.8;
+        }
+        #user-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            background: rgba(255, 255, 255, 0.09);
+        }
 
         #send-btn {
-            padding: 12px 24px;
+            padding: 12px 22px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            transition: all var(--transition-smooth);
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
+            min-height: 48px;
+            min-width: 48px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+            flex-shrink: 0;
         }
 
-        #send-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
-        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #send-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        #send-btn:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+        #send-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            pointer-events: none;
+        }
 
-        /* --- History Tab --- */
-        #history-tab { padding: 24px; overflow-y: auto; }
+        #send-btn .btn-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* --- Onglet Historique --- */
+        #history-tab {
+            padding: 16px 20px;
+            padding-bottom: max(16px, var(--safe-bottom));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        #history-tab::-webkit-scrollbar {
+            width: 4px;
+        }
+        #history-tab::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #history-tab::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 10px;
+        }
 
         .session-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            margin-bottom: 12px;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
             overflow: hidden;
-            transition: all 0.3s;
+            transition: all var(--transition-smooth);
+        }
+        .session-card:hover {
+            border-color: var(--glass-border-strong);
         }
 
         .session-header {
-            padding: 16px;
+            padding: 14px 16px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            min-height: 48px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: background var(--transition-fast);
+        }
+        .session-header:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .session-header:active {
+            background: rgba(255, 255, 255, 0.07);
         }
 
-        .session-header:hover { background: rgba(255, 255, 255, 0.05); }
+        .session-header span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .session-header i {
+            transition: transform var(--transition-smooth);
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+        }
 
         .session-details {
-            padding: 0 16px 16px 16px;
             display: none;
             border-top: 1px solid var(--glass-border);
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.15);
+            padding: 12px 16px 16px;
+        }
+        .session-details.open {
+            display: block;
+            animation: slideDown 0.25s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
         }
 
         .msg-item {
-            margin-top: 12px;
+            margin-top: 10px;
             font-size: 0.85rem;
-            padding: 8px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border-radius: var(--radius-xs);
+            line-height: 1.5;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
-
-        .human-msg { color: #818cf8; background: rgba(129, 140, 248, 0.1); }
-        .ai-msg { color: #34d399; background: rgba(52, 211, 153, 0.1); }
+        .msg-item:first-child {
+            margin-top: 0;
+        }
+        .human-msg {
+            color: #a5b4fc;
+            background: rgba(129, 140, 248, 0.1);
+            border-left: 3px solid rgba(129, 140, 248, 0.4);
+        }
+        .ai-msg {
+            color: #34d399;
+            background: rgba(52, 211, 153, 0.08);
+            border-left: 3px solid rgba(52, 211, 153, 0.4);
+        }
+        .msg-item strong {
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
 
         .loading-spinner {
             display: flex;
             justify-content: center;
-            padding: 40px;
+            align-items: center;
+            padding: 40px 20px;
             color: var(--text-dim);
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .loading-spinner::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--glass-border);
+            border-top-color: var(--primary-light);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
+        .empty-state {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 30px 20px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ==================== */
+        /* === MEDIA QUERIES === */
+        /* ==================== */
+
+        /* Tablettes et grands téléphones (≤ 768px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .app-container {
+                height: 100vh;
+                height: 100dvh;
+                max-width: 100%;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            header {
+                padding: 14px 16px;
+                padding-top: max(14px, var(--safe-top));
+                gap: 10px;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .tab {
+                padding: 9px 15px;
+                font-size: 0.85rem;
+                min-height: 38px;
+                min-width: 40px;
+            }
+
+            #chat-box {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+            .message-content {
+                font-size: 0.9rem;
+                padding: 11px 15px;
+                border-radius: 16px;
+            }
+            .user .message-content {
+                border-bottom-right-radius: 4px;
+            }
+            .assistant .message-content {
+                border-bottom-left-radius: 4px;
+            }
+
+            .input-area {
+                padding: 12px 14px;
+                padding-bottom: max(12px, var(--safe-bottom));
+                gap: 8px;
+            }
+
+            #user-input {
+                padding: 12px 16px;
+                font-size: 1rem;
+                border-radius: 12px;
+            }
+
+            #send-btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+                min-height: 46px;
+                min-width: 46px;
+                border-radius: 12px;
+                gap: 6px;
+            }
+
+            #history-tab {
+                padding: 12px 14px;
+                padding-bottom: max(12px, var(--safe-bottom));
+            }
+
+            .session-header {
+                padding: 12px 14px;
+                min-height: 44px;
+            }
+            .session-header span {
+                font-size: 0.85rem;
+            }
+            .session-details {
+                padding: 10px 14px 14px;
+            }
+            .msg-item {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+        }
+
+        /* Petits téléphones (≤ 480px) */
+        @media (max-width: 480px) {
+            header {
+                padding: 10px 12px;
+                padding-top: max(10px, var(--safe-top));
+                gap: 6px;
+                flex-wrap: nowrap;
+            }
+
+            h1 {
+                font-size: 1.15rem;
+                letter-spacing: -0.01em;
+            }
+
+            .tabs {
+                gap: 3px;
+                padding: 3px;
+                border-radius: 10px;
+            }
+
+            .tab {
+                padding: 7px 11px;
+                font-size: 0.78rem;
+                min-height: 34px;
+                min-width: 36px;
+                border-radius: 7px;
+            }
+
+            #chat-box {
+                padding: 12px 10px;
+                gap: 10px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+            .message-content {
+                font-size: 0.85rem;
+                padding: 10px 13px;
+                border-radius: 14px;
+                line-height: 1.5;
+            }
+            .user .message-content {
+                border-bottom-right-radius: 3px;
+            }
+            .assistant .message-content {
+                border-bottom-left-radius: 3px;
+            }
+
+            .input-area {
+                padding: 10px 10px;
+                padding-bottom: max(10px, var(--safe-bottom));
+                gap: 6px;
+            }
+
+            #user-input {
+                padding: 11px 14px;
+                font-size: 0.95rem;
+                border-radius: 10px;
+            }
+
+            #send-btn {
+                padding: 11px 13px;
+                font-size: 0.85rem;
+                min-height: 42px;
+                min-width: 42px;
+                border-radius: 10px;
+                gap: 5px;
+            }
+            #send-btn .btn-text {
+                display: inline;
+            }
+            #send-btn .btn-icon {
+                width: 16px;
+                height: 16px;
+            }
+
+            #history-tab {
+                padding: 10px 10px;
+                padding-bottom: max(10px, var(--safe-bottom));
+            }
+
+            .session-card {
+                border-radius: 12px;
+                margin-bottom: 8px;
+            }
+            .session-header {
+                padding: 10px 12px;
+                min-height: 40px;
+            }
+            .session-header span {
+                font-size: 0.8rem;
+            }
+            .session-details {
+                padding: 8px 10px 12px;
+            }
+            .msg-item {
+                font-size: 0.78rem;
+                padding: 7px 9px;
+                margin-top: 8px;
+            }
+        }
+
+        /* Très petits écrans (≤ 360px) - iPhone SE, etc. */
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1rem;
+            }
+            .tab {
+                padding: 6px 9px;
+                font-size: 0.72rem;
+                min-height: 30px;
+                min-width: 30px;
+            }
+            .message {
+                max-width: 93%;
+            }
+            .message-content {
+                font-size: 0.8rem;
+                padding: 9px 11px;
+            }
+            #send-btn {
+                padding: 10px 10px;
+                min-height: 38px;
+                min-width: 38px;
+                border-radius: 10px;
+            }
+            #send-btn .btn-text {
+                display: none;
+                /* Icône seule sur très petit écran */;
+            }
+            #send-btn .btn-icon {
+                width: 17px;
+                height: 17px;
+            }
+            #user-input {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+                border-radius: 10px;
+            }
+            .input-area {
+                gap: 5px;
+                padding: 8px 8px;
+                padding-bottom: max(8px, var(--safe-bottom));
+            }
+            #chat-box {
+                padding: 10px 8px;
+                gap: 8px;
+            }
+        }
+
+        /* Écrans larges (≥ 1200px) - améliorations desktop */
+        @media (min-width: 1200px) {
+            .app-container {
+                border-radius: 28px;
+            }
+            header {
+                padding: 24px 36px;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+            #chat-box {
+                padding: 28px 36px;
+                gap: 20px;
+            }
+            .message {
+                max-width: 65%;
+            }
+            .input-area {
+                padding: 20px 28px;
+            }
+            #user-input {
+                padding: 15px 22px;
+                font-size: 1.05rem;
+            }
+            #send-btn {
+                padding: 14px 28px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Réduction des animations pour les utilisateurs qui le préfèrent */
+        @media (prefers-reduced-motion: reduce) {
+            .message {
+                animation: none;
+            }
+            .session-details.open {
+                animation: none;
+            }
+            #chat-box {
+                scroll-behavior: auto;
+            }
+            * {
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- En-tête -->
         <header>
             <h1>Esméralda.IA</h1>
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('chat')">Assistant</button>
-                <button class="tab" onclick="switchTab('history')">Historique</button>
+                <button class="tab active" data-tab="chat" onclick="switchTab('chat')" aria-label="Onglet Assistant">Assistant</button>
+                <button class="tab" data-tab="history" onclick="switchTab('history')" aria-label="Onglet Historique">Historique</button>
             </div>
         </header>
 
         <!-- Onglet Chat -->
         <div id="chat-tab" class="tab-content active">
-            <div id="chat-box"></div>
+            <div id="chat-box" aria-live="polite" aria-label="Conversation"></div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Comment vous sentez-vous aujourd'hui ?" onkeypress="if(event.key === 'Enter') sendMessage()" />
-                <button id="send-btn" onclick="sendMessage()">
-                    <span>Envoyer</span>
-                    <i data-lucide="send" style="width: 18px;"></i>
+                <input
+                type="text"
+                id="user-input"
+                placeholder="Comment vous sentez-vous aujourd'hui ?"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                aria-label="Votre message"
+                />
+                <button id="send-btn" onclick="sendMessage()" aria-label="Envoyer le message">
+                    <span class="btn-text">Envoyer</span>
+                    <i data-lucide="send" class="btn-icon"></i>
                 </button>
             </div>
         </div>
@@ -272,20 +840,22 @@
     </div>
 
     <script>
-        // Initialisation des icônes
+        // Initialisation des icônes Lucide
         lucide.createIcons();
 
-        // ========== CONFIGURATION (Gardée de ton code original) ==========
+        // ========== CONFIGURATION ==========
         const N8N_WEBHOOK_URL = 'https://ia.lorenmoi.com/webhook/7d0ef59e-1d83-490d-97d1-fc43f4b6aeaf/chat';
         const SUPABASE_URL = 'https://cnpnefhcxwwvvkuoihbm.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucG5lZmhjeHd3dnZrdW9paGJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMjczODEsImV4cCI6MjA5NDYwMzM4MX0.adTRk0wdINea3KCfgYRGDhFL4phUW36RRH--T128aMY';
+        const SUPABASE_ANON_KEY =
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucG5lZmhjeHd3dnZrdW9paGJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMjczODEsImV4cCI6MjA5NDYwMzM4MX0.adTRk0wdINea3KCfgYRGDhFL4phUW36RRH--T128aMY';
 
         let sessionId = localStorage.getItem('chatSessionId') || generateUUID();
         localStorage.setItem('chatSessionId', sessionId);
 
         function generateUUID() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-                const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
         }
@@ -296,25 +866,55 @@
             const message = input.value.trim();
             if (!message) return;
 
+            // Affiche le message utilisateur
             appendMessage('user', message);
             input.value = '';
-            
+            // Focus sur l'input après envoi (pratique sur mobile)
+            input.focus();
+
             const btn = document.getElementById('send-btn');
             btn.disabled = true;
+
+            // Indicateur de frappe (optionnel, commenté car n8n peut être lent)
+            // const typingIndicator = appendMessage('assistant', '● ● ●');
+            // typingIndicator.style.opacity = '0.6';
 
             try {
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chatInput: message, sessionId: sessionId })
+                    body: JSON.stringify({
+                        chatInput: message,
+                        sessionId: sessionId
+                    })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
                 const data = await response.json();
-                const assistantMessage = data.output || data.text || data.response || "Je vous écoute...";
+                const assistantMessage =
+                    data.output ||
+                    data.text ||
+                    data.response ||
+                    data.message ||
+                    "Je vous écoute...";
+
+                // Supprime l'indicateur de frappe s'il existe
+                // if (typingIndicator) typingIndicator.remove();
+
                 appendMessage('assistant', assistantMessage);
             } catch (error) {
-                appendMessage('assistant', "Désolé, j'ai rencontré une petite erreur technique.");
+                console.error('Erreur chat:', error);
+                // if (typingIndicator) typingIndicator.remove();
+                appendMessage(
+                    'assistant',
+                    "Désolé, j'ai rencontré une petite erreur technique. Veuillez réessayer."
+                );
             } finally {
                 btn.disabled = false;
+                input.focus();
             }
         }
 
@@ -324,7 +924,14 @@
             msgDiv.classList.add('message', role);
             msgDiv.innerHTML = `<div class="message-content">${escapeHtml(text).replace(/\n/g, '<br>')}</div>`;
             chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Scroll fluide vers le bas
+            requestAnimationFrame(() => {
+                chatBox.scrollTo({
+                    top: chatBox.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
         }
 
         function escapeHtml(text) {
@@ -333,48 +940,69 @@
             return div.innerHTML;
         }
 
-        // ========== LOGIQUE HISTORIQUE AMÉLIORÉE ==========
+        // ========== LOGIQUE HISTORIQUE ==========
         async function loadHistory() {
             const container = document.getElementById('sessions-list');
             container.innerHTML = '<div class="loading-spinner">Analyse de l\'historique...</div>';
 
             try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/n8n_chat_histories?select=session_id,message,id&order=id.desc`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                const res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/n8n_chat_histories?select=session_id,message,id&order=id.desc`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
                     }
-                });
+                );
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
                 const messages = await res.json();
                 const sessions = {};
-
 
                 messages.forEach(msg => {
                     const sid = msg.session_id;
                     if (!sessions[sid]) sessions[sid] = [];
-                    // Le message est déjà un objet, inutile de le parser
-                    const msgData = typeof msg.message === 'string' ? JSON.parse(msg.message) : msg.message;
-                    sessions[sid].push({ role: msgData.type, content: msgData.content });
+                    const msgData = typeof msg.message === 'string' ?
+                        JSON.parse(msg.message) :
+                        msg.message;
+                    sessions[sid].push({
+                        role: msgData.type || msgData.role || 'unknown',
+                        content: msgData.content || msgData.message || '(message vide)'
+                    });
                 });
 
                 container.innerHTML = '';
-                if (Object.keys(sessions).length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:var(--text-dim)">Aucune conversation passée.</p>';
+
+                const sessionIds = Object.keys(sessions);
+                if (sessionIds.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state">📭 Aucune conversation passée.<br>Lancez votre première discussion dans l\'onglet <strong>Assistant</strong>.</div>';
                     return;
                 }
 
-                for (const [sid, msgs] of Object.entries(sessions)) {
+                sessionIds.forEach(sid => {
+                    const msgs = sessions[sid];
+                    // Titre basé sur le message le plus récent (msgs[0] car tri DESC)
+                    const rawTitle = msgs[0]?.content || 'Session sans titre';
+                    const title = rawTitle.length > 55 ?
+                        rawTitle.substring(0, 55).trim() + '...' :
+                        rawTitle;
+
                     const card = document.createElement('div');
                     card.className = 'session-card';
-                    const title = msgs[0]?.content.substring(0, 60) + '...' || 'Session sans titre';
-                    
+                    // On crée une copie inversée pour l'affichage chronologique
+                    const msgsChronological = [...msgs].reverse();
+
                     card.innerHTML = `
-                        <div class="session-header" onclick="toggleSession(this)">
-                            <span style="font-size:0.9rem; font-weight:500">${title}</span>
-                            <i data-lucide="chevron-down" style="width:16px"></i>
+                        <div class="session-header" onclick="toggleSession(this)" role="button" tabindex="0" aria-expanded="false">
+                            <span title="${escapeHtml(rawTitle)}">${escapeHtml(title)}</span>
+                            <i data-lucide="chevron-down"></i>
                         </div>
                         <div class="session-details">
-                            ${msgs.reverse().map(m => `
+                            ${msgsChronological.map(m => `
                                 <div class="msg-item ${m.role === 'human' ? 'human-msg' : 'ai-msg'}">
                                     <strong>${m.role === 'human' ? 'Vous' : 'IA'} :</strong> ${escapeHtml(m.content)}
                                 </div>
@@ -382,37 +1010,106 @@
                         </div>
                     `;
                     container.appendChild(card);
-                }
+                });
+
+                // Réinitialise les icônes pour les nouveaux éléments
                 lucide.createIcons();
             } catch (error) {
-                container.innerHTML = '<p>Erreur lors du chargement.</p>';
+                console.error('Erreur historique:', error);
+                container.innerHTML =
+                    '<div class="empty-state">⚠️ Erreur lors du chargement de l\'historique.<br>Veuillez vérifier votre connexion et réessayer.</div>';
             }
         }
 
         function toggleSession(header) {
             const details = header.nextElementSibling;
-            const isVisible = details.style.display === 'block';
-            details.style.display = isVisible ? 'none' : 'block';
-            header.querySelector('i').style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
-        }
+            const chevron = header.querySelector('i');
+            const isOpen = details.classList.contains('open');
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            if (tab === 'chat') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('chat-tab').classList.add('active');
+            if (isOpen) {
+                details.classList.remove('open');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                header.setAttribute('aria-expanded', 'false');
             } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('history-tab').classList.add('active');
-                loadHistory();
+                details.classList.add('open');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+                header.setAttribute('aria-expanded', 'true');
             }
         }
 
+        // ========== NAVIGATION PAR ONGLETS ==========
+        function switchTab(tabName) {
+            // Met à jour les boutons d'onglets
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            const activeTabBtn = document.querySelector(`.tab[data-tab="${tabName}"]`);
+            if (activeTabBtn) activeTabBtn.classList.add('active');
+
+            // Met à jour les contenus
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const targetContent = document.getElementById(`${tabName}-tab`);
+            if (targetContent) targetContent.classList.add('active');
+
+            // Charge l'historique si on y bascule
+            if (tabName === 'history') {
+                loadHistory();
+            }
+
+            // Sur mobile, scroll vers le haut du contenu
+            if (targetContent) {
+                const scrollable = targetContent.querySelector('#chat-box') || targetContent;
+                if (scrollable && scrollable.scrollTop !== undefined) {
+                    scrollable.scrollTop = scrollable.scrollHeight;
+                }
+            }
+        }
+
+        // ========== GESTION DU CLAVIER SUR MOBILE ==========
+        const userInput = document.getElementById('user-input');
+        userInput.addEventListener('focus', function() {
+            // Sur mobile, s'assurer que la zone de chat est scrollée en bas
+            const chatBox = document.getElementById('chat-box');
+            if (chatBox && window.innerWidth <= 768) {
+                setTimeout(() => {
+                    chatBox.scrollTo({
+                        top: chatBox.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }, 350);
+            }
+        });
+
+        // Permettre l'envoi avec la touche Entrée
+        userInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // ========== INITIALISATION ==========
         window.onload = () => {
-            appendMessage('assistant', 'Bonjour. Je suis votre espace de parole sécurisé. Comment puis-je vous aider aujourd\'hui ?');
+            appendMessage(
+                'assistant',
+                'Bonjour. Je suis votre espace de parole sécurisé. Comment puis-je vous aider aujourd\'hui ?'
+            );
+            // Focus sur l'input pour une utilisation immédiate
+            setTimeout(() => {
+                document.getElementById('user-input').focus();
+            }, 500);
         };
+
+        // ========== GESTION DU CHANGEMENT D'ORIENTATION ==========
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                const chatBox = document.getElementById('chat-box');
+                if (chatBox && document.getElementById('chat-tab').classList.contains('active')) {
+                    chatBox.scrollTo({
+                        top: chatBox.scrollHeight,
+                        behavior: 'instant'
+                    });
+                }
+            }, 400);
+        });
     </script>
 </body>
 </html>
