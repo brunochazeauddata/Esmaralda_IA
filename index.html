@@ -884,6 +884,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        action: "sendMessage",
                         chatInput: message,
                         sessionId: sessionId
                     })
