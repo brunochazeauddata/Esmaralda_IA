@@ -966,7 +966,7 @@
         // ========== LOGIQUE HISTORIQUE ==========
         async function loadHistory() {
             const container = document.getElementById('sessions-list');
-            container.innerHTML = '<div class="loading-spinner">Analyse de l'historique...</div>';
+            container.innerHTML = '<div class="loading-spinner">Analyse de l\'historique...</div>';
 
             try {
                 const res = await fetch(
@@ -1002,7 +1002,7 @@
                 const sessionIds = Object.keys(sessions);
                 if (sessionIds.length === 0) {
                     container.innerHTML =
-                        '<div class="empty-state">📭 Aucune conversation passée.<br>Lancez votre première discussion dans l'onglet <strong>Assistant</strong>.</div>';
+                        '<div class="empty-state">📭 Aucune conversation passée.<br>Lancez votre première discussion dans l\'onglet <strong>Assistant</strong>.</div>';
                     return;
                 }
 
@@ -1043,7 +1043,7 @@
             } catch (error) {
                 console.error('Erreur historique:', error);
                 container.innerHTML =
-                    '<div class="empty-state">⚠️ Erreur lors du chargement de l'historique.<br>Veuillez vérifier votre connexion et réessayer.</div>';
+                    '<div class="empty-state">⚠️ Erreur lors du chargement de l\'historique.<br>Veuillez vérifier votre connexion et réessayer.</div>';
             }
         }
 
@@ -1110,7 +1110,7 @@
         window.onload = () => {
             appendMessage(
                 'assistant',
-                'Bonjour. Je suis votre espace de parole sécurisé. Comment puis-je vous aider aujourd'hui ?'
+                'Bonjour. Je suis votre espace de parole sécurisé. Comment puis-je vous aider aujourd\'hui ?'
             );
             setTimeout(() => {
                 document.getElementById('user-input').focus();
